@@ -26,3 +26,5 @@ A smart habit tracking and intelligence platform designed to help you build bett
 ```bash
 git clone https://github.com/JanardhanS56/Habit-IQ.git
 cd Habit-IQ
+
+<img width="882" height="631" alt="Screenshot 2026-03-04 223036" src="https://github.com/user-attachments/assets/5ff9ecca-197c-4889-93dc-ea97fb6182cb" />
