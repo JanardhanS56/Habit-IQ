@@ -1,35 +1,330 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Habit Intelligence Dashboard</title>
-<link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script type="module" src="main.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Habit Intelligence Dashboard</title>
+  <meta name="description"
+    content="Offline-first habit and activity tracker with streaks, analytics, and encryption." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
 
-<header>
-  <h1>Habit Intelligence</h1>
-  <button id="themeToggle">Toggle Theme</button>
-  <button id="exportCSV">Export CSV</button>
-</header>
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">⚡</div>
+      <span class="brand-name">HabitIQ</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="dashboard" title="Dashboard">
+        <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="activities" title="Activities">
+        <span class="nav-icon">🗂</span><span class="nav-label">Activities</span>
+      </button>
+      <button class="nav-item" data-view="log" title="Log Entry">
+        <span class="nav-icon">✏️</span><span class="nav-label">Log Entry</span>
+      </button>
+      <button class="nav-item" data-view="streaks" title="Streaks">
+        <span class="nav-icon">🔥</span><span class="nav-label">Streaks</span>
+      </button>
+      <button class="nav-item" data-view="settings" title="Settings">
+        <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <span id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </aside>
 
-<section id="metricsPanel"></section>
+  <!-- ══════════════════ MAIN CONTENT ══════════════════ -->
+  <main class="main-content" id="mainContent">
 
-<section class="charts">
-  <canvas id="dailyChart"></canvas>
-  <canvas id="weeklyChart"></canvas>
-  <canvas id="categoryChart"></canvas>
-</section>
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+      <div class="topbar-title" id="viewTitle">Dashboard</div>
+      <div class="topbar-actions">
+        <button class="btn btn-sm btn-outline" id="exportCSVBtn">📥 Export CSV</button>
+        <button class="btn btn-sm btn-primary" id="addActivityBtn">+ New Activity</button>
+      </div>
+    </header>
 
-<section>
-  <h2>Monthly Heatmap</h2>
-  <div id="heatmap"></div>
-</section>
+    <!-- ── DASHBOARD VIEW ── -->
+    <section class="view active" id="view-dashboard">
+      <!-- Metrics Row -->
+      <div class="metrics-grid" id="metricsGrid">
+        <div class="metric-card" id="mc-consistency">
+          <div class="metric-label">Consistency Score</div>
+          <div class="metric-value" id="val-consistency">—</div>
+          <div class="metric-sub">Last 30 days</div>
+        </div>
+        <div class="metric-card" id="mc-adherence">
+          <div class="metric-label">Target Adherence</div>
+          <div class="metric-value" id="val-adherence">—</div>
+          <div class="metric-sub">Daily target hit rate</div>
+        </div>
+        <div class="metric-card" id="mc-streak">
+          <div class="metric-label">Streak Dominance</div>
+          <div class="metric-value" id="val-streak-dom">—</div>
+          <div class="metric-sub">Active streaks ratio</div>
+        </div>
+        <div class="metric-card" id="mc-productivity">
+          <div class="metric-label">Productivity Score</div>
+          <div class="metric-value" id="val-productivity">—</div>
+          <div class="metric-sub">Weighted composite</div>
+        </div>
+      </div>
 
-<script type="module" src="js/main.js"></script>
+      <!-- Charts Row 1 -->
+      <div class="charts-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h3>Daily Activity <span class="badge">Last 7 Days</span></h3>
+            <select id="dailyChartActivity" class="select-sm"></select>
+          </div>
+          <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Category Breakdown</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="charts-row">
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <h3>Weekly Summary <span class="badge">Last 8 Weeks</span></h3>
+          </div>
+          <div class="chart-wrap"><canvas id="weeklyChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="heatmap-card">
+        <div class="chart-header">
+          <h3>Monthly Heatmap</h3>
+          <div class="heatmap-controls">
+            <select id="heatmapActivity" class="select-sm"></select>
+            <select id="heatmapMonth" class="select-sm"></select>
+          </div>
+        </div>
+        <div class="heatmap-legend">
+          <span>Less</span>
+          <div class="heat-cell level-0"></div>
+          <div class="heat-cell level-1"></div>
+          <div class="heat-cell level-2"></div>
+          <div class="heat-cell level-3"></div>
+          <div class="heat-cell level-4"></div>
+          <span>More</span>
+        </div>
+        <div class="heatmap-days-label">
+          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+        <div id="heatmap" class="heatmap-grid"></div>
+      </div>
+    </section>
+
+    <!-- ── ACTIVITIES VIEW ── -->
+    <section class="view" id="view-activities">
+      <div class="section-header">
+        <h2>Your Activities</h2>
+        <div class="filter-row">
+          <select id="filterCategory" class="select-sm">
+            <option value="">All Categories</option>
+          </select>
+          <select id="filterType" class="select-sm">
+            <option value="">All Types</option>
+            <option value="binary">Binary</option>
+            <option value="timed">Time-Tracked</option>
+          </select>
+        </div>
+      </div>
+      <div class="activities-list" id="activitiesList">
+        <div class="empty-state" id="emptyActivities">
+          <div class="empty-icon">🌱</div>
+          <p>No activities yet. Click <strong>+ New Activity</strong> to get started!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LOG ENTRY VIEW ── -->
+    <section class="view" id="view-log">
+      <div class="section-header">
+        <h2>Log Entry</h2>
+        <div class="log-date-row">
+          <label>Date:</label>
+          <input type="date" id="logDate" class="input-field" />
+          <span class="past-lock-badge" id="pastLockBadge" style="display:none">🔒 Past edits locked</span>
+        </div>
+      </div>
+      <div class="log-grid" id="logGrid">
+        <div class="empty-state">
+          <div class="empty-icon">📝</div>
+          <p>Add activities first to begin logging.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STREAKS VIEW ── -->
+    <section class="view" id="view-streaks">
+      <div class="section-header">
+        <h2>Streaks & Records</h2>
+      </div>
+      <div class="streaks-grid" id="streaksGrid">
+        <div class="empty-state">
+          <div class="empty-icon">🔥</div>
+          <p>Start logging to build streaks!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SETTINGS VIEW ── -->
+    <section class="view" id="view-settings">
+      <div class="section-header">
+        <h2>Settings</h2>
+      </div>
+      <div class="settings-grid">
+        <div class="settings-card">
+          <h3>🔒 Past Edit Lock</h3>
+          <p>When enabled, you cannot edit logs from previous days.</p>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pastEditLock" />
+            <span class="slider"></span>
+            <span class="toggle-label">Lock past edits</span>
+          </label>
+        </div>
+        <div class="settings-card">
+          <h3>🔐 Data Encryption</h3>
+          <p>Encrypt your exported data with a password using AES-GCM.</p>
+          <div class="input-group">
+            <input type="password" id="encryptPassword" class="input-field" placeholder="Encryption password" />
+            <button class="btn btn-primary" id="exportEncryptedBtn">Export Encrypted</button>
+          </div>
+        </div>
+        <div class="settings-card">
+          <h3>📊 Manage Categories</h3>
+          <div class="categories-manager" id="categoriesManager"></div>
+          <div class="input-group mt-1">
+            <input type="text" id="newCategoryName" class="input-field" placeholder="New category name" />
+            <input type="color" id="newCategoryColor" value="#3b82f6" />
+            <button class="btn btn-primary" id="addCategoryBtn">Add</button>
+          </div>
+        </div>
+        <div class="settings-card danger-zone">
+          <h3>⚠️ Danger Zone</h3>
+          <p>Clear all data. This cannot be undone.</p>
+          <button class="btn btn-danger" id="clearDataBtn">Clear All Data</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════ MODALS ══════════════════ -->
+
+  <!-- Add/Edit Activity Modal -->
+  <div class="modal-overlay" id="activityModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="activityModalTitle">New Activity</h3>
+        <button class="modal-close" data-modal="activityModal">✕</button>
+      </div>
+      <form id="activityForm" class="modal-body">
+        <input type="hidden" id="activityId" />
+        <div class="form-group">
+          <label>Activity Name *</label>
+          <input type="text" id="activityName" class="input-field" placeholder="e.g. Morning Run" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type *</label>
+            <select id="activityType" class="input-field" required>
+              <option value="binary">Binary (Done/Not Done)</option>
+              <option value="timed">Time-Tracked (minutes)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="activityCategory" class="input-field">
+              <option value="">Uncategorized</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Daily Target <span id="targetUnit">(done = 1)</span></label>
+            <input type="number" id="activityDailyTarget" class="input-field" min="1" value="1" />
+          </div>
+          <div class="form-group">
+            <label>Weekly Target</label>
+            <input type="number" id="activityWeeklyTarget" class="input-field" min="0" placeholder="e.g. 5 days/wk" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Color Tag</label>
+          <input type="color" id="activityColor" value="#3b82f6" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-modal="activityModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveActivityBtn">Save Activity</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Time Session Modal -->
+  <div class="modal-overlay" id="sessionModal">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 id="sessionModalTitle">Add Time Session</h3>
+        <button class="modal-close" data-modal="sessionModal">✕</button>
+      </div>
+      <div class="modal-body" id="sessionModalBody">
+        <div class="session-list" id="sessionList"></div>
+        <div class="form-row mt-1">
+          <input type="number" id="sessionMinutes" class="input-field" min="1" max="1440" placeholder="Minutes" />
+          <button class="btn btn-primary" id="addSessionBtn">Add Session</button>
+        </div>
+        <div class="session-total">Total today: <strong id="sessionTotal">0</strong> min</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3>Confirm Delete</h3>
+        <button class="modal-close" data-modal="confirmModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">Are you sure you want to delete this activity? All logs will be lost.</p>
+        <div class="modal-footer">
+          <button class="btn btn-outline" data-modal="confirmModal">Cancel</button>
+          <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="js/main.js?v=2"></script>
 </body>
-</html>
 
+</html>
