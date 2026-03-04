@@ -80,10 +80,6 @@ Your data stays in your browser.
 - Chart.js
 - Web Crypto API (AES-GCM + PBKDF2)
 
-No frameworks.  
-No build tools.  
-No backend services.
-
 ---
 
 ## Why This Exists
@@ -98,8 +94,15 @@ It is built to answer:
 - Which categories dominate my effort?
 - Is my streak meaningful or accidental?
 
-It prioritizes architecture and clarity over visual decoration.
+## Contribution Guidelines
 
----
+Contributions are welcome, especially in:
 
-## Project Structure
+- Performance optimization
+- UI/UX refinement
+- Metric modeling improvements
+- Heatmap aggregation accuracy
+- IndexedDB query optimization
+- Accessibility improvements
+- Modular refactoring
+- Documentation clarity
