@@ -20,11 +20,5 @@ A smart habit tracking and intelligence platform designed to help you build bett
 - npm or yarn package manager
 - Modern web browser
 
-### Installation
+<img width="882" height="631" alt="Screenshot 2026-03-04 223036" src="https://github.com/user-attachments/assets/f3d189f0-5274-4933-9ed3-5cd5c1437cdc" />
 
-1. Clone the repository:
-```bash
-git clone https://github.com/JanardhanS56/Habit-IQ.git
-cd Habit-IQ
-
-<img width="882" height="631" alt="Screenshot 2026-03-04 223036" src="https://github.com/user-attachments/assets/5ff9ecca-197c-4889-93dc-ea97fb6182cb" />
